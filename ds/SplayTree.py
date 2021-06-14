@@ -1,3 +1,8 @@
+# space complexity -> av : O(N), worst: O(N)
+# insertion -> av: O(logN), worst: O(N)
+# deletion -> av: O(logN), worst: O(N)
+# search -> av: O(logN), worst: O(N)
+
 class Node:
     def __init__(self, data):
         self.data = data
