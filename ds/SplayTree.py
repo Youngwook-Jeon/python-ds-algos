@@ -4,9 +4,9 @@
 # search -> av: O(logN), worst: O(N)
 
 class Node:
-    def __init__(self, data):
+    def __init__(self, data, parent):
         self.data = data
-        self.parent = None
+        self.parent = parent
         self.left_child = None
         self.right_child = None
 
@@ -17,20 +17,20 @@ class SplayTree:
     # it is exactly the same as BST
     def insert(self, data):
         if self.root is None:
-            self.root = Node(data)
+            self.root = Node(data, None)
         else:
-            self.insert(data, self.root)
+            self.insert_node(data, self.root)
     
     # BST insertion
-    def insert(self, data, node):
+    def insert_node(self, data, node):
         if data < node.data:
             if node.left_child:
-                self.insert(data, node.left_child)
+                self.insert_node(data, node.left_child)
             else:
                 node.left_child = Node(data, node)
         else:
             if node.right_child:
-                self.insert(data, node.right_child)
+                self.insert_node(data, node.right_child)
             else:
                 node.right_child = Node(data, node)
     
@@ -45,9 +45,33 @@ class SplayTree:
             else:
                 self.splay(node)
                 return node.data
+    def splay(self, node):
+        # while we hit the root node - this is how we make the node 
+        # to be the root node (caches)
+        while node.parent is not None:
+            # the node is a left or right child of the root
+            if node.parent.parent is None:
+                if node == node.parent.left_child:
+                    self.rotate_right(node.parent)
+                else:
+                    self.rotate_left(node.parent)
+            # doubly left heavy case ZIG-ZIG situation
+            elif node == node.parent.left_child and node.parent == node.parent.parent.left_child:
+                self.rotate_right(node.parent.parent)
+                self.rotate_right(node.parent)
+            elif node == node.parent.right_child and node.parent == node.parent.parent.right_child:
+                self.rotate_left(node.parent.parent)
+                self.rotate_left(node.parent)
+            # ZIG-ZAG situation
+            elif node == node.parent.left_child and node.parent == node.parent.parent.right_child:
+                self.rotate_right(node.parent)
+                self.rotate_left(node.parent)
+            else:
+                self.rotate_left(node.parent)
+                self.rotate_right(node.parent)
     
     # the in-order traversal is the same after rotation
-    def right_rotation(self, node):
+    def rotate_right(self, node):
         temp_left_node = node.left_child
         t = temp_left_node.right_child
 
@@ -94,3 +118,12 @@ class SplayTree:
         if node == self.root:
             self.root = temp_right_node
 
+if __name__ == '__main__':
+    splay_tree = SplayTree()
+    splay_tree.insert(10)
+    splay_tree.insert(8)
+    splay_tree.insert(3)
+    splay_tree.insert(7)
+
+    splay_tree.find(7)
+    print(splay_tree.root.data)
