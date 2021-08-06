@@ -48,10 +48,67 @@ def insert_node(root_node, node_value, heap_type):
     heapify_tree_insert(root_node, root_node.heap_size, heap_type)
     return "The value has been successfully inserted"
 
+def heapify_tree_extract(root_node, index, heap_type):
+    left_index = index * 2
+    right_index = index * 2 + 1
+    swap_child = 0
+
+    if root_node.heap_size < left_index:
+        return
+    elif root_node.heap_size == left_index:
+        if heap_type == "Min":
+            if root_node.custom_list[index] > root_node.custom_list[left_index]:
+                temp = root_node.custom_list[index]
+                root_node.custom_list[index] = root_node.custom_list[left_index]
+                root_node.custom_list[left_index] = temp
+            return
+        else:
+            if root_node.custom_list[index] < root_node.custom_list[left_index]:
+                temp = root_node.custom_list[index]
+                root_node.custom_list[index] = root_node.custom_list[left_index]
+                root_node.custom_list[left_index] = temp
+            return
+    else:
+        if heap_type == "Min":
+            if root_node.custom_list[left_index] < root_node.custom_list[right_index]:
+                swap_child = left_index
+            else:
+                swap_child = right_index
+            if root_node.custom_list[index] > root_node.custom_list[swap_child]:
+                temp = root_node.custom_list[index]
+                root_node.custom_list[index] = root_node.custom_list[swap_child]
+                root_node.custom_list[swap_child] = temp
+        else:
+            if root_node.custom_list[left_index] > root_node.custom_list[right_index]:
+                swap_child = left_index
+            else:
+                swap_child = right_index
+            if root_node.custom_list[index] < root_node.custom_list[swap_child]:
+                temp = root_node.custom_list[index]
+                root_node.custom_list[index] = root_node.custom_list[swap_child]
+                root_node.custom_list[swap_child] = temp
+
+    heapify_tree_extract(root_node, swap_child, heap_type)
+
+def extract_node(root_node, heap_type):
+    if root_node.heap_size == 0:
+        return
+    else:
+        extracted = root_node.custom_list[1]
+        root_node.custom_list[1] = root_node.custom_list[root_node.heap_size]
+        root_node.custom_list[root_node.heap_size] = None
+        root_node.heap_size -= 1
+        heapify_tree_extract(root_node, 1, heap_type)
+        return extracted
+
+def delete_entire_BH(root_node):
+    root_node.custom_list = None
+
 if __name__ == "__main__":
     new_heap = Heap(5)
     insert_node(new_heap, 4, "Min")
     insert_node(new_heap, 5, "Min")
     insert_node(new_heap, 2, "Min")
     insert_node(new_heap, 1, "Min")
+    extract_node(new_heap, "Min")
     level_order_traversal(new_heap)
